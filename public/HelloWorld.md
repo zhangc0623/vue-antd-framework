@@ -1,0 +1,1 @@
+> If you don't work hard, who will help you.
