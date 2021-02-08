@@ -1,13 +1,13 @@
 <template>
   <div class="dk_layout">
     <a-layout id="components-layout-demo-custom-trigger">
-      <DKSider v-if="$store.getters.device === 'pc'" />
-      <DkMobileSider v-else />
+      <DKHeader />
       <a-layout class="ly--c-r-ctn">
-        <DKHeader />
-        <DKTab></DKTab>
-        <DKContent id="data-list-content">
-        </DKContent>
+        <DKSider/>
+        <a-layout>
+          <DKTab menuType="studio"></DKTab>
+          <DKContent></DKContent>
+        </a-layout>
       </a-layout>
     </a-layout>
   </div>
@@ -17,8 +17,6 @@
 import DKHeader from './modules/DKHeader'
 import DKSider from './modules/DKSider'
 import DKContent from './modules/DKContent'
-import DkMobileSider from './modules/DkMobileSider'
-import handlerSize from './minxins/handlerSize'
 import DKTab from './modules/DKTab'
 export default {
   name: 'Layout',
@@ -26,10 +24,8 @@ export default {
     DKHeader,
     DKSider,
     DKContent,
-    DkMobileSider,
     DKTab
   },
-  mixins: [handlerSize],
   mounted () {
   },
   data () {
@@ -43,7 +39,7 @@ export default {
 .dk_layout {
   height: 100vh;
   .ly--c-r-ctn {
-    min-height: 100vh;
+    height: calc(100vh - 52px);
   }
 }
 </style>

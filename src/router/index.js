@@ -14,7 +14,7 @@ export default new Router({
       path: '/login',
       name: 'login',
       // '预加载'router
-      component: () => import('@/views/user/login/Login'),
+      component: () => import('@/views/user/Login'),
       meta: {
         isNotValAuth: true // 不需要验证
       }

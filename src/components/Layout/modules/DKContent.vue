@@ -1,7 +1,7 @@
 <template>
   <a-layout-content class="sys_container">
     <keep-alive :include="tagList">
-      <router-view class="mb10 content">
+      <router-view class="mb10 content" v-if="isRouterAlive">
       </router-view>
     </keep-alive>
     <DKFooter class="footer" />
@@ -15,9 +15,15 @@ export default {
   components: {
     DKFooter
   },
+  provide () {
+    return {
+      reload: this.reload
+    }
+  },
   data () {
     return {
-      tagList: []
+      tagList: [],
+      isRouterAlive: true
     }
   },
   methods: {
@@ -28,6 +34,12 @@ export default {
     },
     timestamp () {
       return Date.parse(new Date())
+    },
+    reload () {
+      this.isRouterAlive = false
+      this.$nextTick(() => {
+        this.isRouterAlive = true
+      })
     }
   },
   created () {
@@ -66,32 +78,11 @@ export default {
 </script>
 
 <style lang='less' scoped>
-  @import url('../../../assets/css/color.less');
   .sys_container {
     position: relative;
     overflow: auto;
     background: white;
-  }
-
-  /*定义滚动条高宽及背景
-   高宽分别对应横竖滚动条的尺寸*/
-  ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-    background-color: #f5f5f5;
-  }
-  /*定义滚动条轨道
-   内阴影+圆角*/
-  ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px @default;
-    border-radius: 10px;
-    background-color: #f5f5f5;
-  }
-  /*定义滑块
-   内阴影+圆角*/
-  ::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px @default;
-    background-color: #555;
+    margin: 8px;
+    padding: 24px 24px 0;
   }
 </style>

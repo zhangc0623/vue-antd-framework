@@ -51,7 +51,7 @@ router.beforeEach(async (to, from, next) => {
           // let authUri = process.env.VUE_APP_BASE_URL + process.env.VUE_APP_AUTH_METHOD
           // // 跳转到鉴权中心登录
           // window.location.href = authUri
-        //  登录页面
+          //  登录页面
           router.push('/login')
         } else {
           // 登录授权失败

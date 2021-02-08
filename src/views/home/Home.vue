@@ -1,5 +1,5 @@
 <template>
-  <div style="background: white;height: calc(100vh - 134px);">
+  <div>
     <a-result title="欢迎使用Ant Design!">
       <template #icon>
         <a-icon type="smile" theme="twoTone"/>

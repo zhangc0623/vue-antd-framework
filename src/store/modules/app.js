@@ -9,26 +9,17 @@ import i18n from '@/i18n/vue-i18n'
 
 const state = {
   init: false, // 刚进页面之前init为false,
-  device: 'pc', // 设备是手机还是pc
-  collapsed: false,
   setting: false,
   // 一种方法记录点击菜单到localstorage中，还有另一种方法记菜单数据到store中
   // 最好的记录方法是将点击的数据记录到localstorage中或cookies里面这样的话比较很方便的取得数据的内容，如果存到store中的话
   menuPath: localStorage.getItem('menuPath')
     ? localStorage.getItem('menuPath')
-    : MenuLists.menu && MenuLists.menu.length > 0 ? MenuLists.menu[0].path : '/home',
-  language: localStorage.getItem('language')
-    ? localStorage.getItem('language')
-    : 'ZH'
+    : MenuLists.menu && MenuLists.menu.length > 0 ? MenuLists.menu[0].key : '/home',
+  // 面包屑导航
+  breadList: '',
 }
 
 const mutations = {
-  UPDATE_COLLAPSED: (state, action) => {
-    state.collapsed = action || !state.collapsed
-  },
-  UPDATE_DEVICE: (state, device) => {
-    state.device = device
-  },
   UPDATE_SETTING: (state, status) => {
     state.setting = status
   },
@@ -36,31 +27,21 @@ const mutations = {
     state.menuPath = menuPath
     localStorage.setItem('menuPath', menuPath)
   },
-  CHANGE_LANGUAGE: (state, language) => {
-    state.language = language
-    localStorage.setItem('language', language)
-    i18n.locale = localStorage.getItem('language')
-      ? localStorage.getItem('language').toLowerCase()
-      : 'zh'
-  }
+  UPDATE_BREAD_LIST: (state, breadList) => {
+    state.breadList = breadList
+  },
 }
 
 const actions = {
-  updateCollapsed ({ commit }, action) {
-    commit('UPDATE_COLLAPSED', action)
-  },
-  updateDevice ({ commit }, device) {
-    commit('UPDATE_DEVICE', device)
-  },
   updateSetting ({ commit }, status) {
     commit('UPDATE_SETTING', status)
   },
   updateMenu ({ commit }, menuPath) {
     commit('UPDATE_MENU', menuPath)
   },
-  changeLanguage ({ commit }, language) {
-    commit('CHANGE_LANGUAGE', language)
-  }
+  updateBreadList ({ commit }, breadList) {
+    commit('UPDATE_BREAD_LIST', breadList)
+  },
 }
 
 export default {

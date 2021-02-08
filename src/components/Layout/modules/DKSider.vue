@@ -1,24 +1,13 @@
 <template>
   <a-layout-sider
     :trigger="null"
-    collapsible
     theme="light"
-    v-model="$store.getters.collapsed"
     class="dk_sider"
-    :class="{ pcSider: !collapsed }"
-    width="140"
-    collapsedWidth="55"
+    width="200"
   >
-    <div class="dk_header_logo">
-      <!--左侧logo-->
-      <!--<img src="@/assets/images/main/Expand_logo.png" >-->
-      <div style="display: inline-block;">
-        <span style="font-size: 18px;float: left;margin-left: 8px;" v-if="showTip">前台系统</span>
-      </div>
-    </div>
     <a-menu
       class="ly-ctn-menu"
-      :theme="themeConfig.color"
+      theme="light"
       mode="inline"
       :defaultSelectedKeys="[activeMenu]"
       :selectedKeys="[activeMenu]"
@@ -90,23 +79,21 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import DKSider from '../minxins/DKSider'
-// import logoImg1 from './../../../assets/images/main/Expand_logo.png'
-// import logoImg2 from './../../../assets/images/main/logo.png'
+import MenuLists from '@/assets/jsons/menuLists'
+// 项目管理工具类
+import BreadListHelper from '@/assets/tools/BreadListHelper'
 export default {
   name: 'DKSider',
   props: {},
-  mixins: [DKSider],
   computed: {
-    ...mapGetters(['collapsed', 'menuVal'])
+    ...mapGetters(['menuPath', 'language'])
   },
   data () {
     return {
-      themeConfig: {
-        color: 'dark'
-      },
-      // logoImg: logoImg2,
-      showTip: true
+      showTip: true,
+      menuLists: [],
+      // 聚焦菜单
+      activeMenu: ''
     }
   },
   methods: {
@@ -118,48 +105,91 @@ export default {
         return true
       }
     },
-  },
-  created: function () {
-    // 菜单收缩切换logo
-    this.$bus.on('type', type => {
-      if (type) {
-        this.showTip = false
-      } else {
-        this.showTip = true
+    /* 改变目录 */
+    changeMenu (menu, key1, key2) {
+      let tagMenu = menu
+      // 存储面包屑导航菜单
+      let breadList = []
+      let path = menu.key
+      // 面包屑导航赋值一级菜单
+      breadList.push({
+        title: menu.menuName,
+        path: menu.path
+      })
+      // 若当前点击目录存在子目录
+      if (menu.children !== undefined) {
+        for (let i = 0; i < menu.children.length; i++) {
+          const childItem = menu.children[i]
+          if (key1 === childItem.key) {
+            // 面包屑导航赋值二级菜单
+            breadList.push({
+              title: childItem.menuName,
+              path: childItem.path
+            })
+            tagMenu = childItem
+            path = childItem.key
+            // 若点击目录的子目录存在子目录
+            if (childItem.children !== undefined) {
+              for (let j = 0; j < childItem.children.length; j++) {
+                const child2Item = childItem.children[j]
+                // 面包屑导航赋值三级菜单
+                if (key2 === child2Item.key) {
+                  breadList.push({
+                    title: child2Item.menuName,
+                    path: child2Item.path
+                  })
+                  tagMenu = childItem
+                  path = child2Item.key
+                }
+              }
+            }
+          }
+        }
       }
-    })
+      if (tagMenu.path) {
+        // 改变面包屑导航值
+        BreadListHelper.changeMenuBread(breadList)
+        // 更新app/updateMenu
+        this.$store.dispatch('app/updateMenu', path)
+      }
+      try {
+        let dom = document
+          .getElementsByClassName('ly-ctn-menu')[0]
+          .getElementsByClassName('ant-menu-submenu')
+        for (let c = 0; c < dom.length; c++) {
+          let className = dom[c].getAttribute('class')
+          className = className.replace('ant-menu-submenu-open', '')
+        }
+      } catch (e) {
+        throw new Error('查询菜单错误')
+      }
+    }
+  },
+  watch: {
+    menuPath (newVal) {
+      if (newVal.substr(0, 1) === '/') {
+        newVal = newVal.replace('/', '')
+      }
+      this.activeMenu = newVal
+    },
+  },
+  created () {
+    this.menuLists = MenuLists['menu'] ? MenuLists['menu'] : []
+    this.activeMenu = this.menuPath
+    if (this.menuPath.substr(0, 1) === '/') {
+      this.activeMenu = this.menuPath.replace('/', '')
+    }
   }
 }
 </script>
-<style>
-  .ant-layout-sider-children{
-    overflow-y: auto;
-  }
-</style>
 <style lang="less" scoped>
-  .ant-menu-inline-collapsed {
-    width: 55px;
-  }
   .dk_sider {
-    height: 100vh;
-    /*box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);*/
-    background: #001529;
-  &.pcSider {
-     flex: 0 0 140px !important;
-     width: 140px !important;
-     max-width: 140px !important;
-   }
-  .dk_header_logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 64px;
-    color: #fff;
-    font-size: 22px;
-  }
-  .ly-ctn-menu {
-    height: calc(100vh - 64px);
-  }
+    height: calc(100vh - 50px);
+    background: #fff;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,.08);
+    z-index: 2;
+    .ly-ctn-menu {
+      height: calc(100vh - 48px);
+    }
   }
 </style>
